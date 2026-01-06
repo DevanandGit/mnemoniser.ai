@@ -14,7 +14,7 @@ payload = {
 # a = payload.get("message")
 # print(a)
 
-# @api.post("/telegram/webhook")
+@api.post("/telegram/webhook")
 def listener(payload: dict):
     message = payload.get("message")
     print("The User Prompt is ", message)
