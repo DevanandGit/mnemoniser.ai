@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from dotenv import load_dotenv
 load_dotenv()  # ✅ FIRST LINE
-from .model import mnemoniser
+from model import mnemoniser
 api = FastAPI()
 
 @api.get("/")
