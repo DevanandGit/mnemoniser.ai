@@ -25,8 +25,10 @@ async def telegram_webhook(request: Request):
     chat_id = data["message"]["chat"]["id"]
     text = data["message"].get("text", "")
 
-    # Your AI / logic
-    reply = f"You said: {text}"
+    if text == "/start":
+        reply = "Bot is live. Send any message."
+    else:
+        reply = f"You said: {text}"
 
     # Send reply back to Telegram
     async with httpx.AsyncClient() as client:
