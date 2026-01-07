@@ -1,33 +1,41 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, HTTPException
+import httpx
+import os
 from dotenv import load_dotenv
-load_dotenv()  # ✅ FIRST LINE
-from model import mnemoniser
+
+load_dotenv()
+
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+TELEGRAM_API = f"https://api.telegram.org/bot{BOT_TOKEN}"
+
 api = FastAPI()
 
 @api.get("/")
 async def root():
-    return {"message": "Hello World"}
-
-payload = {
-    "message": "What is cagr"
-}
-# a = payload.get("message")
-# print(a)
+    return {"status": "running"}
 
 @api.post("/telegram/webhook")
-def listener(payload: dict):
-    message = payload.get("message")
-    print("The User Prompt is ", message)
-    print("The User Prompt  type is ", type(message))
-    if not message:
-        return {"satus": True}
-    
-    response = mnemoniser(message)
-    print(response)
+async def telegram_webhook(request: Request):
+    data = await request.json()
 
-    return {"data": response}
+    # Extract message safely
+    if "message" not in data:
+        return {"ok": True}
 
-    
+    chat_id = data["message"]["chat"]["id"]
+    text = data["message"].get("text", "")
 
-listener(payload)
+    # Your AI / logic
+    reply = f"You said: {text}"
 
+    # Send reply back to Telegram
+    async with httpx.AsyncClient() as client:
+        await client.post(
+            f"{TELEGRAM_API}/sendMessage",
+            json={
+                "chat_id": chat_id,
+                "text": reply
+            }
+        )
+
+    return {"ok": True}
