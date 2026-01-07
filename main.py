@@ -2,8 +2,11 @@ from fastapi import FastAPI, Request, HTTPException
 import httpx
 import os
 from dotenv import load_dotenv
+from fastapi import FastAPI
+load_dotenv()  # ✅ FIRST LINE
+from model import mnemoniser
+api = FastAPI()
 
-load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 TELEGRAM_API = f"https://api.telegram.org/bot{BOT_TOKEN}"
@@ -28,7 +31,7 @@ async def telegram_webhook(request: Request):
     if text == "/start":
         reply = "Bot is live. Send any message."
     else:
-        reply = f"You said: {text}"
+        reply =  mnemoniser(text)
 
     # Send reply back to Telegram
     async with httpx.AsyncClient() as client:
